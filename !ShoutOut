@@ -1,0 +1,1 @@
+!command add !so /me Please take a moment to check out ${1} at https://twitch.tv/${channel ${1}} and show them some love!
