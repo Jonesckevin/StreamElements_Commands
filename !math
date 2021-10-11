@@ -1,0 +1,14 @@
+~~~~~~~~~~~~~~~~~~~~
++  Add
+-  Subtract
+*  Multiply
+/  Divide
+^  Exponent
+~~~~~~~~~~~~~~~~~~~~
+
+
+Example(Spaces don't matter: !math 315+225 + 405*1^1 (This would equal 945)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+!cmd add !math @$(sender), Your total maths of $(1:) = ${customapi.https://decapi.me/math?exp=$(queryencode $(1:))&round=1}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
