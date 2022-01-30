@@ -1,0 +1,19 @@
+HTML:
+```
+<link href="https://fonts.googleapis.com/css?family={{mainTextFontName}}:400,700" rel="stylesheet">
+```
+
+CSS:
+```
+font-family: '{{mainTextFontName}}', sans-serif;
+```
+
+Field somewhere:
+```
+"mainTextFontName": {
+    "type": "googleFont",    
+    "label": "Text Font name",
+    "value": "Oswald",
+    "group":"Text Config"
+}
+```
