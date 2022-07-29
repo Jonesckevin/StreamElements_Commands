@@ -1,0 +1,41 @@
+{
+  
+"chatCommand": {
+  "type": "text",
+  "label": "Chat Command",
+  "value": "!stopwatch",
+  "group":"Command"
+},
+"mainTextColor": {
+    "type": "colorpicker",
+    "label": "Text Color",
+    "value": "#fdb336",
+    "group":"Text Config"
+  },
+  "mainTextFontName": {
+    "type": "googleFont",    
+    "label": "Text Font name",
+    "value": "Oswald",
+    "group":"Text Config"
+  },
+  "mainTextFontSize": {
+    "type": "number",
+    "label": "Text Font size",
+    "value": 70,
+    "group":"Text Config"
+  },
+  "mainTextFontWeight": {
+    "label": "Text Font Weight",
+    "type": "dropdown",
+    "value": "400",
+    "options": {
+      "100": "Thin (100)",
+      "300": "Light (300)",
+      "400": "Regular (400)",
+      "500": "Medium (500)",
+      "700": "Bold (700)",
+      "900": "Black (900)"
+    },
+    "group":"Text Config"
+  }
+}

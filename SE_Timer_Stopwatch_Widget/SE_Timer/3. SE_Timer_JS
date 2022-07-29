@@ -1,0 +1,311 @@
+
+var currentTime = 0;
+var isRunning = false;
+var cleared = false;
+var isPaused = false;
+var timeAdded = 0;
+var maxReached = false
+var eventQueue = [];
+ $("#event").fadeOut(500); 
+
+displayEvent()
+if({{alwaysShow}}){
+  $("#cdtimer").fadeTo(0,500); 
+  display = document.querySelector('#cdtimer');
+     display.textContent = "00:00"
+}
+window.addEventListener('onEventReceived', function (obj) {
+	
+	let data = obj.detail.event.data;
+  	const event = obj.detail.event;
+  	console.log("Event")
+  	console.log(obj.detail.event)
+  
+	//if (obj.detail.listener !== "message") return;
+  	//if (data["displayName"] == "StreamElements"	) return;
+	
+  
+  
+   
+
+	
+  
+  	if(event.type == "follower" && {{followerEnabled}} && {{followerIncrease}} != null ){
+      console.log("Following12")
+      eventIncreaseTime( {{followerIncrease}} )
+      if(!maxReached)
+      	eventQueue.push(event.name + " added {{followerIncrease}} seconds by following.")
+      else
+      	eventQueue.push(event.name + " followed but cap was reached.")
+        
+    }else if(event.type == "subscriber" && {{subEnabled}} && ({{subT1Increase}} != null || {{subT2Increase}} != null ||{{subT3Increase}} != null  ) ){
+     	console.log("Subscribing12")
+      	console.log(event)
+      	if(event.hasOwnProperty("gifted") && event.gifted){
+          console.log("Gifted")
+        	if(event.tier=="prime" || event.tier=="1000"){
+              	eventIncreaseTime( {{subT1Increase}} )
+              	if(!maxReached)
+      				eventQueue.push(event.name + " added {{subT1Increase}} seconds by gifting a tier 1 sub to " +event.name+ ".")
+      		  	else
+      				eventQueue.push(event.name + " gifting a tier 1 sub to " +event.name+ " but the cap was reached.")
+            }else if(event.tier=="2000"){
+              eventIncreaseTime( {{subT2Increase}} )
+              	if(!maxReached)
+      				eventQueue.push(event.name + " added {{subT21Increase}} seconds by gifting a tier 2 sub to " +event.name+ ".")
+      		  	else
+      				eventQueue.push(event.name + " gifting a tier 2 sub to " +event.name+ " but the cap was reached.")
+            }else if(event.tier=="3000"){
+              eventIncreaseTime( {{subT3Increase}} )
+              	if(!maxReached)
+      				eventQueue.push(event.name + " added {{subT3Increase}} seconds by gifting a tier 3 sub to " +event.name+ ".")
+      		  	else
+      				eventQueue.push(event.name + " gifting a tier 3 sub to " +event.name+ " but the cap was reached.")
+            }
+        }else{
+          	console.log("Normal")
+          	if(event.hasOwnProperty("data")){
+           		return 
+          	}
+          	console.log(event.bulkGifted)
+         	if(event.hasOwnProperty("bulkGifted")){
+        		if(event.bulkGifted){
+         			return 
+        		}
+            }
+          	console.log("Normal")
+            	if(event.tier=="prime" || event.tier=="1000"){
+              		eventIncreaseTime( {{subT1Increase}} )
+                  if(!maxReached)
+                      eventQueue.push(event.name + " added {{subT1Increase}} seconds by subscribing.")
+                  else
+      				eventQueue.push(event.name + " subscribed but the cap was reached.")
+            	}else if(event.tier=="2000"){
+              		eventIncreaseTime( {{subT2Increase}} )
+                   if(!maxReached)
+                      eventQueue.push(event.name + " added {{subT2Increase}} seconds by subscribing.")
+                  else
+      				eventQueue.push(event.name + " subscribed (Tier 2) but the cap was reached.")
+           	}else if(event.tier=="3000"){
+              		eventIncreaseTime( {{subT3Increase}} )
+                   if(!maxReached)
+                      eventQueue.push(event.name + " added {{subT3Increase}} seconds by subscribing.")
+                  else
+      				eventQueue.push(event.name + " subscribed (Tier 3) but the cap was reached.")
+          	}
+       	 	
+        }
+      
+    }else if(event.type == "cheer" && {{cheerEnabled}} && {{cheerIncrease}} != null ){
+            console.log("Cheering123")
+		if(event.amount == null){
+         	return  
+        }
+      let amount = {{cheerIncrease}} * event.amount;
+      eventIncreaseTime( amount )
+  		console.log(amount)
+ 		if(!maxReached)
+        	eventQueue.push(event.name + " added " + amount + " seconds by cheering.")
+    	else
+      		eventQueue.push(event.name + " cheered but the cap was reached.")
+      
+    }else if(event.type == "tip" && {{tipEnabled}} && {{tipIncrease}} != null ){
+        console.log("Tipping123")
+		if(event.amount == null){
+         	return  
+        }
+  	 	let amount = {{tipIncrease}} * Math.floor(event.amount);
+      	eventIncreaseTime( amount )
+ 		if(!maxReached)
+        	eventQueue.push(event.name + " added " + amount + " seconds by tipping.")
+    	else
+      		eventQueue.push(event.name + " tipped but the cap was reached.")
+    }else if(obj.detail.listener == "message"){
+      	console.log("This is a message")
+      	var badge1,badge2,badge3 = '';
+   		let message = data["text"];
+    	const listener = obj.detail.listener.split("-")[0];
+    	const event = obj.detail.event;
+   	 	var command = message.split(" ")[0];
+    	var option = message.split(" ")[1];
+    	var time = message.split(" ")[2];
+ 
+  		if (data["badges"][0]["type"])
+            badge1 = data["badges"][0]["type"];
+			console.log(command.toLowerCase());
+			console.log('{{chatCommand}}');
+            if (command.toLowerCase() == "{{chatCommand}}" && ( badge1 === 'moderator' || badge1 === 'broadcaster') ) {
+				
+			console.log(command.toLowerCase());
+			console.log(option);
+              if( option=="clear"){
+              		currentTime = 0; 
+                	cleared = true;
+              }else if( option=="pause"){
+                	isPaused = true;
+              }else if( option=="unpause"){
+                	isPaused = false;
+              }else if( option == "start"){
+                	
+                	if(time =="" || time == null){
+                      isPaused = false;
+                    }else{
+                     	 isPaused = false;
+                      	console.log("starting");
+                		if({{playSoundStart}} && !isRunning){
+                			playAudio('{{soundFileStart}}','{{soundVolumeStart}}');
+                    	}
+                      
+                		cleared = false;
+                		const {hours, minutes, seconds} = parseTime(time);
+                		currentTime  =  hours+minutes+seconds;
+                    	if(!isRunning){
+                      	start();
+                      }
+                    }
+              }else if(option =="speak"){
+                 if('speechSynthesis' in window){
+                    var speech = new SpeechSynthesisUtterance('hello baby');
+                    speech.lang = 'en-US';
+                    window.speechSynthesis.speak(speech);
+                }
+              }else if(option == "add"){
+                	const {hours, minutes, seconds} = parseTime(time);
+                	currentTime  = currentTime + hours + minutes + seconds;
+                    if(!isRunning){
+                      start();
+                    }
+              }
+            }
+      
+      
+      
+      
+    }   
+});
+
+
+function displayEvent(){
+ 	if(eventQueue.length !=0){
+      	eventQueue = eventQueue.reverse()
+       $("#event").fadeOut(500, function() {
+   		 $("#event").text(eventQueue.pop());
+    		$("#event").fadeIn(500);
+  		});
+      	eventQueue = eventQueue.reverse() 
+   		setTimeout(displayEvent, 10000);
+    }else{ 
+      $("#event").fadeOut(500, function() {
+   		 $("#event").text("");
+    		$("#event").fadeIn(500);
+  		});
+    	setTimeout(displayEvent, 500);
+    }
+  
+}
+function start(){
+	document.querySelector("#cdtimer").classList.remove('animated', "bounceOut");
+    document.querySelector("#cdtimer").classList.remove('animated', "slow");
+  	$("#cdtimer").fadeTo(0,500);
+	update();
+  	if(isPaused && isRunning){
+      setTimeout(start, 1000);
+      return;
+    }
+  	if(currentTime-- > 0 ){
+      	isRunning = true;
+    	setTimeout(start, 1000);
+    }else{
+      	if({{playSound}} && !cleared){
+      		playAudio('{{soundFile}}','{{soundVolume}}');
+		}
+      	if(!{{alwaysShow}}){
+          setTimeout(() => {  
+              animateCSS('#cdtimer', "bounceOut");
+              animateCSS('#cdtimer', "slow");
+              $("#cdtimer").fadeTo(500,0); 
+          }, 2000);
+        }
+     	isRunning = false;
+      	cleared = false;
+    }
+}
+
+function eventIncreaseTime(time){
+  console.log("EventIncreseTime")
+  console.log({{cappedTime}})
+  	if({{cappedTime}}!=null && {{cappedTime}}!=-1){
+      	if({{cappedTime}} <= timeAdded){
+          maxReached = true
+          return
+        }
+     	timeAdded = timeAdded + time/60; 
+      	console.log(timeAdded)
+      	
+    }
+  	if(currentTime == null) 
+      	currentTime = 0;
+  	currentTime  = currentTime + time;
+	if(!isRunning){
+        start();
+    }
+}
+
+function parseTime(time) {
+  	var hours = 0;
+  	var minutes = 0;
+  	var seconds = 0;
+  
+	var split = time.split(":");
+  
+    if(split.length == 3){
+        hours = parseInt(split[0]) * 60*60;
+        minutes = parseInt(split[1]) * 60;
+        seconds = parseInt(split[2]);
+    }else if(split.length == 2){
+        hours = 0;
+        minutes = parseInt(split[0]) * 60;
+        seconds = parseInt(split[1]);
+    }else{
+      hours = 0;
+      minutes = 0;
+      seconds = parseInt(split[0]);
+    }
+	return {hours, minutes, seconds};
+}
+
+function update(){
+	display = document.querySelector('#cdtimer');
+   let d = Number(currentTime);
+    var h = Math.floor(d / 3600);
+    var m = Math.floor(d % 3600 / 60);
+    var s = Math.floor(d % 3600 % 60);
+
+  	hours = h < 10 ? "0" + h : h;
+  	minutes = m < 10 ? "0" + m : m;
+  	seconds = s < 10 ? "0" + s : s;
+   
+  	if(currentTime == null){
+      display.textContent = ""
+      return
+    }
+  
+  	if(hours!=0){
+    	display.textContent = hours + ":" +minutes + ":" + seconds;
+    }else{
+       	display.textContent = minutes + ":" + seconds; 
+    }
+
+}
+
+function animateCSS(element, animationName) {
+    const node = document.querySelector(element);
+    node.classList.add('animated', animationName)
+
+}
+function playAudio(sound, volume){
+  console.log("playSound");
+		let audio = new Audio(sound);	
+		audio.volume = volume * .01;
+		audio.play();
+	}

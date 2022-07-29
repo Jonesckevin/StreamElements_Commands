@@ -1,0 +1,33 @@
+#cdtimer {
+  	position: relative;
+   	margin: 0 auto;
+  	top: {{mainTextfontHeight}}%;
+  	line-height: {{mainTextFontSize}}px;
+	z-index: 3;
+  	font-family: '{{mainTextFontName}}', sans-serif;
+   	font-weight: {{mainTextFontWeight}};
+  	color: {{mainTextColor}}; /* Top Color */
+	text-align: left;
+	font-size: {{mainTextFontSize}}px;
+  	text-shadow: 4px 4px 4px #000000;
+	text-transform: uppercase;
+	background-size: cover;
+    width: 100%;
+    overflow: hidden;
+}
+#event {
+  	position: relative;
+   	margin: 0 auto;
+  	line-height: {{eventTextFontSize}}px;
+	z-index: 3;
+  	font-family: '{{eventTextFontName}}', sans-serif;
+   	font-weight: {{eventTextFontWeight}};
+  	color: {{eventTextColor}}; /* Top Color */
+	text-align: left;
+	font-size: {{eventTextFontSize}}px;
+  	text-shadow: 4px 4px 4px #000000;
+	text-transform: uppercase;
+	background-size: cover;
+    width: 100%;
+    overflow: hidden;
+}

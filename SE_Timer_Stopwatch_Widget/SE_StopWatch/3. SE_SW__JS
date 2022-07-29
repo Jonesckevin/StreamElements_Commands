@@ -1,0 +1,145 @@
+
+var currentTime = 0;
+var isRunning = false;
+var cleared = false;
+var isPaused = false;
+
+var eventQueue = [];
+ $("#event").fadeOut(500); 
+window.addEventListener('onEventReceived', function (obj) {
+	
+	let data = obj.detail.event.data;
+  	const event = obj.detail.event;
+  	console.log("Event")
+  	console.log(obj.detail.event)
+  
+	//if (obj.detail.listener !== "message") return;
+  	//if (data["displayName"] == "StreamElements"	) return;
+	if(obj.detail.listener == "message"){
+      	console.log("This is a message")
+      	var badge1,badge2,badge3 = '';
+   		let message = data["text"];
+    	const listener = obj.detail.listener.split("-")[0];
+    	const event = obj.detail.event;
+   	 	var command = message.split(" ")[0];
+    	var option = message.split(" ")[1];
+    	var time = message.split(" ")[2];
+ 
+  		if (data["badges"][0]["type"])
+            badge1 = data["badges"][0]["type"];
+			console.log(command.toLowerCase());
+			console.log('{{chatCommand}}');
+            if (command.toLowerCase() == "{{chatCommand}}" && ( badge1 === 'moderator' || badge1 === 'broadcaster') ) {
+				
+			console.log(command.toLowerCase());
+			console.log(option);
+              if( option=="clear"){
+              		currentTime = 0; 
+                	cleared = true;
+               	 	isRunning = false;
+                	
+              }else if( option=="pause"){
+                	isPaused = true;
+              }else if( option=="stop"){
+                	isPaused = true;
+              }else if( option=="unpause"){
+                	isPaused = false;
+              }else if( option == "start"){
+                	if(!isRunning){
+                        currentTime = 0; 
+                      	isPaused = false;
+                		cleared = false;
+                		isRunning = true;
+                		start();
+                    }else if(isRunning && isPaused){
+                    	isPaused = false;
+                    }
+              }
+            }
+      
+      
+      
+      
+    }   
+});
+
+function start(){
+  console.log("start");
+
+	update();
+  	if(cleared){
+      animateCSS('#cdtimer', "bounceOut");
+					animateCSS('#cdtimer', "slow");
+      				$("#cdtimer").fadeTo(500,0); 
+    	return;
+    }
+  	document.querySelector("#cdtimer").classList.remove('animated', "bounceOut");
+    document.querySelector("#cdtimer").classList.remove('animated', "slow");
+  	$("#cdtimer").fadeTo(0,500);
+  	if(isPaused && isRunning){
+      setTimeout(start, 1000);
+      return;
+    }
+     currentTime++;
+    setTimeout(start, 1000);
+}
+
+
+function parseTime(time) {
+  	var hours = 0;
+  	var minutes = 0;
+  	var seconds = 0;
+  
+	var split = time.split(":");
+  
+    if(split.length == 3){
+        hours = parseInt(split[0]) * 60*60;
+        minutes = parseInt(split[1]) * 60;
+        seconds = parseInt(split[2]);
+    }else if(split.length == 2){
+        hours = 0;
+        minutes = parseInt(split[0]) * 60;
+        seconds = parseInt(split[1]);
+    }else{
+      hours = 0;
+      minutes = 0;
+      seconds = parseInt(split[0]);
+    }
+	return {hours, minutes, seconds};
+}
+
+function update(){
+	display = document.querySelector('#cdtimer');
+   let d = Number(currentTime);
+    var h = Math.floor(d / 3600);
+    var m = Math.floor(d % 3600 / 60);
+    var s = Math.floor(d % 3600 % 60);
+
+  	hours = h < 10 ? "0" + h : h;
+  	minutes = m < 10 ? "0" + m : m;
+  	seconds = s < 10 ? "0" + s : s;
+   
+  	if(currentTime == null){
+      display.textContent = ""
+      return
+    }
+  
+  	if(hours!=0){
+    	display.textContent = hours + ":" +minutes + ":" + seconds;
+    }else{
+       	display.textContent = minutes + ":" + seconds; 
+    }
+
+}
+
+function animateCSS(element, animationName) {
+    const node = document.querySelector(element);
+    node.classList.add('animated', animationName)
+
+}
+function playAudio(sound, volume){
+  console.log("playSound");
+		let audio = new Audio(sound);	
+		audio.volume = volume * .01;
+		audio.play();
+	}
